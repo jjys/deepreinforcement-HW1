@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusText = document.getElementById('status-text');
     const btnReset = document.getElementById('btn-reset');
     const btnEval = document.getElementById('btn-eval');
+    const btnOptimize = document.getElementById('btn-optimize');
 
     // Evaluation results section
     const resultsSection = document.getElementById('results-section');
@@ -30,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         obstacles = [];
 
         btnEval.disabled = true;
+        btnOptimize.disabled = true;
         resultsSection.classList.add('hidden');
         updateStatus();
 
@@ -80,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (clickState === 2 + numObstaclesAllowed) {
             btnEval.disabled = false;
+            btnOptimize.disabled = false;
         }
     }
 
@@ -111,18 +114,46 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(res => res.json())
             .then(data => {
                 resultsSection.classList.remove('hidden');
-                animateEvaluation(data.v_history, data.policy);
+                animateEvaluation(data.v_history, data.policy, null);
                 btnEval.textContent = "重新評估隨機策略";
                 btnEval.disabled = false;
+                btnOptimize.disabled = false;
             })
             .catch(err => {
                 console.error(err);
                 btnEval.textContent = "評估失敗，請重試";
                 btnEval.disabled = false;
+                btnOptimize.disabled = false;
             });
     });
 
-    function renderResults(values, policy) {
+    btnOptimize.addEventListener('click', () => {
+        btnEval.disabled = true;
+        btnOptimize.disabled = true;
+        btnOptimize.textContent = "推導最佳政策中...";
+
+        fetch('/optimize', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ n: n, start: startPos, target: targetPos, obstacles: obstacles })
+        })
+            .then(res => res.json())
+            .then(data => {
+                resultsSection.classList.remove('hidden');
+                animateEvaluation(data.v_history, data.policy, data.optimal_actions);
+                btnOptimize.textContent = "重新執行價值迭代 algorithm";
+                btnOptimize.disabled = false;
+                btnEval.disabled = false;
+            })
+            .catch(err => {
+                console.error(err);
+                btnOptimize.textContent = "評估失敗，請重試";
+                btnOptimize.disabled = false;
+                btnEval.disabled = false;
+            });
+    });
+
+    function renderResults(values, policy, optimal_actions) {
         valueMatrixDiv.style.gridTemplateColumns = `repeat(${n}, 55px)`;
         valueMatrixDiv.style.gridTemplateRows = `repeat(${n}, 55px)`;
         policyMatrixDiv.style.gridTemplateColumns = `repeat(${n}, 55px)`;
@@ -167,13 +198,53 @@ document.addEventListener('DOMContentLoaded', () => {
                 policyMatrixDiv.appendChild(pCell);
             }
         }
+
+        // Highlight optimal path if optimal_actions is provided
+        if (optimal_actions && startPos && targetPos) {
+            let r = startPos[0];
+            let c = startPos[1];
+            let actions_mapping = { 0: [-1, 0], 1: [0, 1], 2: [1, 0], 3: [0, -1] };
+            let visited = new Set();
+            let safe_limit = n * n; // prevent infinite loops
+
+            while ((r !== targetPos[0] || c !== targetPos[1]) && safe_limit > 0) {
+                let cellId = r * n + c;
+                if (visited.has(cellId)) break; // loop detected
+                visited.add(cellId);
+
+                // apply optimal-path style to both grids
+                valueMatrixDiv.children[cellId].classList.add('optimal-path');
+                policyMatrixDiv.children[cellId].classList.add('optimal-path');
+
+                let a = optimal_actions[r][c];
+                let dr = actions_mapping[a][0];
+                let dc = actions_mapping[a][1];
+                let nr = r + dr;
+                let nc = c + dc;
+
+                // bounds/obstacles check
+                if (nr < 0 || nr >= n || nc < 0 || nc >= n || obstacles.some(o => o[0] === nr && o[1] === nc)) {
+                    break; // stuck
+                }
+                r = nr;
+                c = nc;
+                safe_limit--;
+            }
+
+            // Highlight target cell too if reached
+            if (r === targetPos[0] && c === targetPos[1]) {
+                let cellId = r * n + c;
+                valueMatrixDiv.children[cellId].classList.add('optimal-path');
+                policyMatrixDiv.children[cellId].classList.add('optimal-path');
+            }
+        }
     }
 
-    function animateEvaluation(v_history, policy) {
+    function animateEvaluation(v_history, policy, optimal_actions) {
         if (animationId) clearInterval(animationId);
 
         // Initial render to set up the grid layout
-        renderResults(v_history[0], policy);
+        renderResults(v_history[0], policy, optimal_actions);
 
         let iter = 0;
         const totalIters = v_history.length;

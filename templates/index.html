@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="/static/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="container">
         <h1>強化學習 HW1: 網格地圖與策略評估</h1>
@@ -18,20 +20,21 @@
             <div class="actions">
                 <button id="btn-reset" class="btn btn-secondary">重新設定</button>
                 <button id="btn-eval" class="btn btn-primary" disabled>評估隨機策略</button>
+                <button id="btn-optimize" class="btn btn-success" disabled>執行價值迭代算法(最佳政策)</button>
             </div>
         </div>
-        
+
         <div class="instructions-card">
             <p id="status-text" class="status-msg">步驟 1: 點擊單元格設定 <strong>起始點</strong> (顯示為綠色)。</p>
         </div>
-        
+
         <div class="main-workspace">
             <div class="grid-section">
                 <h3>互動網格地圖</h3>
                 <div id="grid-container" class="grid-container map-grid"></div>
             </div>
         </div>
-        
+
         <div id="results-section" class="results-section hidden">
             <h2>策略顯示與價值評估結果</h2>
             <div class="results-container">
@@ -46,7 +49,8 @@
             </div>
         </div>
     </div>
-    
+
     <script src="/static/script.js"></script>
 </body>
+
 </html>
