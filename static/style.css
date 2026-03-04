@@ -1,0 +1,250 @@
+:root {
+    --bg-color: #f4f7f6;
+    --card-bg: #ffffff;
+    --text-color: #2c3e50;
+    --text-light: #596e79;
+    --primary-color: #3498db;
+    --primary-hover: #2980b9;
+    --secondary-color: #95a5a6;
+    --secondary-hover: #7f8c8d;
+    
+    --start-color: #2ecc71;
+    --target-color: #e74c3c;
+    --obstacle-color: #636e72;
+    --cell-empty: #ecf0f1;
+    --cell-hover: #dfe6e9;
+    --border-color: #bdc3c7;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    line-height: 1.6;
+}
+
+.container {
+    background-color: var(--card-bg);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    max-width: 1000px;
+    width: 100%;
+}
+
+h1 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+    font-weight: 700;
+    color: #1e272e;
+}
+
+h2, h3 {
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.controls-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    border: 1px solid var(--cell-empty);
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.highlight-val {
+    color: var(--primary-color);
+    font-size: 20px;
+}
+
+input[type="range"] {
+    cursor: pointer;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background-color: var(--secondary-hover);
+    transform: translateY(-2px);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.instructions-card {
+    text-align: center;
+    padding: 15px;
+    background-color: #ebf5fb;
+    border-left: 5px solid var(--primary-color);
+    border-radius: 6px;
+    margin-bottom: 30px;
+}
+
+.status-msg {
+    font-size: 16px;
+    color: #2980b9;
+}
+
+.main-workspace {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.grid-section {
+    text-align: center;
+}
+
+.grid-container {
+    display: grid;
+    gap: 3px;
+    margin: 0 auto;
+    background-color: var(--border-color);
+    border: 3px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    width: max-content;
+}
+
+.cell {
+    background-color: var(--card-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 600;
+    user-select: none;
+    transition: background-color 0.2s;
+    color: var(--text-color);
+}
+
+.map-grid .cell {
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+}
+
+.map-grid .cell:hover {
+    background-color: var(--cell-hover);
+}
+
+.map-grid .cell[data-id] {
+    position: relative;
+}
+
+.map-grid .cell.numbered::before {
+    content: attr(data-id);
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.policy-grid .cell, .value-grid .cell {
+    width: 55px;
+    height: 55px;
+    font-size: 14px;
+    cursor: default;
+}
+
+.value-grid .cell {
+    font-size: 13px;
+}
+
+/* Cell States */
+.cell.start {
+    background-color: var(--start-color) !important;
+    color: white !important;
+}
+
+.cell.target {
+    background-color: var(--target-color) !important;
+    color: white !important;
+}
+
+.cell.obstacle {
+    background-color: var(--obstacle-color) !important;
+    color: transparent !important;
+}
+
+.results-section {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px dashed #eee;
+}
+
+.results-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 25px;
+}
+
+.result-box {
+    background-color: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--cell-empty);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+
+.hidden {
+    display: none;
+}
+
+.arrow {
+    font-size: 22px;
+    font-weight: bold;
+    color: #2c3e50;
+}
